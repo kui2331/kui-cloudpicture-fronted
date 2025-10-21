@@ -29,6 +29,7 @@ import GlobalHeader from '@/components/GlobalHeader.vue'
   padding: 16px;
   min-height: calc(100vh - 64px);
   background: #fafafa;
+  margin-bottom: 50px;
 }
 #basicLayout .header {
   background: #fff;

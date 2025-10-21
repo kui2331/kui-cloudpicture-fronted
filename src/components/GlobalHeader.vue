@@ -19,7 +19,7 @@
     <a-col flex="120px">
       <div class="user-login-status">
         <div v-if="loginUserStore.loginUser">
-          {{ loginUserStore.loginUser.userName ?? '无名' }}
+          {{ loginUserStore.loginUser.userName ?? '未设定昵称' }}
         </div>
         <div v-else>
           <a-button type="primary" href="/user/login">登录</a-button>
@@ -29,11 +29,11 @@
   </a-row>
 </template>
 <script lang="ts" setup>
-import { h, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 import { HomeOutlined } from '@ant-design/icons-vue'
-import { MenuProps } from 'ant-design-vue'
 import router from '@/router'
 import { useLoginUserStore } from '@/stores/user.ts'
+import type { MenuProps } from 'ant-design-vue'
 
 const loginUserStore = useLoginUserStore()
 
@@ -44,24 +44,13 @@ router.afterEach((to, from, next) => {
   current.value = [to.path]
 })
 
-const items = ref<MenuProps['items']>([
-  {
-    key: '/',
-    icon: () => h(HomeOutlined),
-    label: '主页',
-    title: '主页',
-  },
-  {
-    key: '/about',
-    label: '关于',
-    title: '关于',
-  },
-  {
-    key: 'others',
-    label: '其它',
-    title: '其它',
-  },
-])
+const items = computed<MenuProps['items']>(() => {
+  return router.options.routes.map((route) => ({
+    key: route.path,
+    label: route.meta?.title,
+    icon: route.meta?.icon ? () => h(route.meta!.icon!) : undefined,
+  }))
+})
 const doMenuClick = ({ key }: { key: string }) => {
   router.push({
     path: key,
