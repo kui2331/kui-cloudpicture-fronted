@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi'
+import request from '@/request.ts'
 
 /** health GET /api/health */
 export async function healthUsingGet(options?: { [key: string]: any }) {
