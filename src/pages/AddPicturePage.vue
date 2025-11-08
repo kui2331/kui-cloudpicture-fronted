@@ -25,6 +25,9 @@
       <a-form-item name="name" label="名称">
         <a-input v-model:value="pictureForm.name" placeholder="请输入名称" allow-clear />
       </a-form-item>
+      <a-typography-paragraph v-if="spaceId" type="secondary">
+        保存至空间：<a :href="`/space/${spaceId}`" target="_blank">{{ spaceId }}</a>
+      </a-typography-paragraph>
       <a-form-item name="introduction" label="简介">
         <a-textarea
           v-model:value="pictureForm.introduction"
@@ -59,7 +62,7 @@
 
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import {
   editPictureUsingPost,
@@ -72,6 +75,10 @@ import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 const picture = ref<API.PictureVO>()
 const pictureForm = reactive<API.PictureEditRequest>({})
 const uploadType = ref<'file' | 'url'>('file')
+// 空间 id
+const spaceId = computed(() => {
+  return route.query?.spaceId
+})
 
 /**
  * 图片上传成功
@@ -96,8 +103,10 @@ const handleSubmit = async (values: any) => {
   }
   const res = await editPictureUsingPost({
     id: pictureId,
+    spaceId: spaceId.value,
     ...values,
   })
+
   // 操作成功
   if (res.data.code === 0 && res.data.data) {
     message.success('创建成功')

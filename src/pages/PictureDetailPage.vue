@@ -48,20 +48,22 @@
             </a-descriptions-item>
           </a-descriptions>
           <!-- 图片操作 -->
-          <a-space wrap>
-            <a-button type="primary" @click="doDownload">
-              免费下载
-              <template #icon>
-                <DownloadOutlined />
-              </template>
-            </a-button>
-            <a-button v-if="canEdit" :icon="h(EditOutlined)" type="default" @click="doEdit">
-              编辑
-            </a-button>
-            <a-button v-if="canEdit" :icon="h(DeleteOutlined)" danger @click="doDelete">
-              删除
-            </a-button>
-          </a-space>
+          <template #actions v-if="showOp">
+            <a-space wrap>
+              <a-button type="primary" @click="doDownload">
+                免费下载
+                <template #icon>
+                  <DownloadOutlined />
+                </template>
+              </a-button>
+              <a-button v-if="canEdit" :icon="h(EditOutlined)" type="default" @click="doEdit">
+                编辑
+              </a-button>
+              <a-button v-if="canEdit" :icon="h(DeleteOutlined)" danger @click="doDelete">
+                删除
+              </a-button>
+            </a-space>
+          </template>
         </a-card>
       </a-col>
     </a-row>
@@ -73,16 +75,23 @@ import { computed, h, onMounted, ref } from 'vue'
 import { deletePictureUsingPost, getPictureVoByIdUsingGet } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons-vue'
-
+import { formatSize } from '@/utils'
 import { useRouter } from 'vue-router'
 import { downloadImage } from '@/utils'
 import { useLoginUserStore } from '@/stores/userLoginUserStore.ts'
 
 interface Props {
-  id: string | number
+  dataList?: API.PictureVO[]
+  loading?: boolean
+  showOp?: boolean
+  onReload?: () => void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  dataList: () => [],
+  loading: false,
+  showOp: false,
+})
 const picture = ref<API.PictureVO>({})
 
 const loginUserStore = useLoginUserStore()
@@ -122,19 +131,29 @@ onMounted(() => {
 const router = useRouter()
 
 // 编辑
-const doEdit = () => {
-  router.push('/add_picture?id=' + picture.value.id)
+const doEdit = (picture, e) => {
+  e.stopPropagation()
+  router.push({
+    path: '/add_picture',
+    query: {
+      id: picture.id,
+      spaceId: picture.spaceId,
+    },
+  })
 }
 
-// 删除数据
-const doDelete = async () => {
-  const id = picture.value.id
+// 删除
+const doDelete = async (picture, e) => {
+  e.stopPropagation()
+  const id = picture.id
   if (!id) {
     return
   }
   const res = await deletePictureUsingPost({ id })
   if (res.data.code === 0) {
     message.success('删除成功')
+    // 让外层刷新
+    props?.onReload()
   } else {
     message.error('删除失败')
   }

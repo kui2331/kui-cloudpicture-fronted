@@ -28,3 +28,4 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+/src/api/testFileController.ts

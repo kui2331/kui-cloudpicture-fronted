@@ -26,6 +26,12 @@
             </ASpace>
             <template #overlay>
               <a-menu>
+                <a-menu-item>
+                  <router-link to="/my_space">
+                    <UserOutlined />
+                    我的空间
+                  </router-link>
+                </a-menu-item>
                 <a-menu-item @click="doLogout">
                   <LogoutOutlined />
                   退出登录
@@ -44,7 +50,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, h, ref } from 'vue'
-import { HomeOutlined } from '@ant-design/icons-vue'
+import { HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
 import router from '@/router'
 import { useLoginUserStore } from '@/stores/userLoginUserStore.ts'
 import { message } from 'ant-design-vue'
@@ -118,8 +124,26 @@ const originItems = [
     key: '/add_picture',
     label: '创建图片',
     title: '创建图片',
+    meta: {
+      access: ACCESS_ENUM.USER,
+    },
   },
-
+  {
+    key: '/add_picture_batch',
+    label: '批量创建图片',
+    title: '批量创建图片',
+    meta: {
+      access: ACCESS_ENUM.USER,
+    },
+  },
+  {
+    key: '/add_space',
+    label: '创建空间',
+    title: '创建空间',
+    meta: {
+      access: ACCESS_ENUM.USER,
+    },
+  },
   {
     key: '/admin/userManage',
     label: '用户管理',
@@ -132,6 +156,14 @@ const originItems = [
     key: '/admin/pictureManage',
     label: '图片管理',
     title: '图片管理',
+    meta: {
+      access: ACCESS_ENUM.ADMIN,
+    },
+  },
+  {
+    key: '/admin/spaceManage',
+    label: '空间管理',
+    title: '空间管理',
     meta: {
       access: ACCESS_ENUM.ADMIN,
     },

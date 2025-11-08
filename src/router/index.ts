@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import { HomeOutlined } from '@ant-design/icons-vue'
 import HomePage from '@/pages/HomePage.vue'
 import UserLoginPage from '@/pages/user/UserLoginPage.vue'
 import UserRegisterPage from '@/pages/user/UserRegisterPage.vue'
@@ -10,6 +8,10 @@ import AddPicturePage from '@/pages/AddPicturePage.vue'
 import PictureManagePage from '@/pages/admin/PictureManagePage.vue'
 import PictureDetailPage from '@/pages/PictureDetailPage.vue'
 import AddPictureBatchPage from '@/pages/AddPictureBatchPage.vue'
+import SpaceManagePage from '@/pages/admin/SpaceManagePage.vue'
+import AddSpacePage from '@/pages/AddSpacePage.vue'
+import MySpacePage from '@/pages/MySpacePage.vue'
+import SpaceDetailPage from '@/pages/SpaceDetailPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,16 +20,25 @@ const router = createRouter({
       path: '/',
       name: '主页',
       component: HomePage,
+      meta: {
+        access: ACCESS_ENUM.NOT_LOGIN,
+      },
     },
     {
       path: '/user/login',
       name: '用户登录',
       component: UserLoginPage,
+      meta: {
+        access: ACCESS_ENUM.NOT_LOGIN,
+      },
     },
     {
       path: '/user/register',
       name: '用户注册',
       component: UserRegisterPage,
+      meta: {
+        access: ACCESS_ENUM.NOT_LOGIN,
+      },
     },
     {
       path: '/admin/userManage',
@@ -41,21 +52,61 @@ const router = createRouter({
       path: '/add_picture',
       name: '创建图片',
       component: AddPicturePage,
+      meta: {
+        access: ACCESS_ENUM.USER,
+      },
+    },
+    {
+      path: '/add_space',
+      name: '创建空间',
+      component: AddSpacePage,
+      meta: {
+        access: ACCESS_ENUM.USER,
+      },
     },
     {
       path: '/add_picture/batch',
       name: '批量创建图片',
       component: AddPictureBatchPage,
+      meta: {
+        access: ACCESS_ENUM.USER,
+      },
     },
     {
       path: '/admin/pictureManage',
       name: '图片管理',
       component: PictureManagePage,
+      meta: {
+        access: ACCESS_ENUM.ADMIN,
+      },
     },
     {
       path: '/picture/:id',
       name: '图片详情',
       component: PictureDetailPage,
+      props: true,
+      meta: {
+        access: ACCESS_ENUM.NOT_LOGIN,
+      },
+    },
+    {
+      path: '/admin/spaceManage',
+      name: '空间管理',
+      component: SpaceManagePage,
+      meta: {
+        access: ACCESS_ENUM.ADMIN,
+      },
+    },
+    {
+      path: '/my_space',
+      name: '我的空间',
+      component: MySpacePage,
+    },
+
+    {
+      path: '/space/:id',
+      name: '空间详情',
+      component: SpaceDetailPage,
       props: true,
     },
   ],

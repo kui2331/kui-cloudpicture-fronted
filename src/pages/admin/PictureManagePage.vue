@@ -182,6 +182,7 @@ const columns = [
 const dataList = ref<API.Picture[]>([])
 const total = ref(0)
 
+// 审核图片
 const handleReview = async (record: API.Picture, reviewStatus: number) => {
   const reviewMessage =
     reviewStatus === PIC_REVIEW_STATUS_ENUM.PASS ? '管理员操作通过' : '管理员操作拒绝'
