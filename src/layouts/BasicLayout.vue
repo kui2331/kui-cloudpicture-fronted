@@ -18,7 +18,6 @@
 <script setup lang="ts">
 import GlobalHeader from '@/components/GlobalHeader.vue'
 import GlobalSider from '@/components/GlobalSider.vue'
-// todo css注释与:deep
 </script>
 <style scoped>
 #basicLayout .footer {

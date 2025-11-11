@@ -151,7 +151,10 @@ declare namespace API {
     userProfile?: string
     userRole?: string
   }
-
+  type ImageSearchResult = {
+    fromUrl?: string
+    thumbUrl?: string
+  }
   type PagePicture_ = {
     current?: number
     pages?: number
@@ -247,6 +250,20 @@ declare namespace API {
     spaceId?: number
     tags?: string[]
     userId?: number
+    startEditTime?: string
+    endEditTime?: string
+  }
+
+  type BaseResponseListImageSearchResult_ = {
+    code?: number
+    data?: ImageSearchResult[]
+    message?: string
+  }
+
+  type BaseResponseListPictureVO_ = {
+    code?: number
+    data?: PictureVO[]
+    message?: string
   }
 
   type PictureReviewRequest = {
@@ -258,6 +275,14 @@ declare namespace API {
   type PictureTagCategory = {
     categoryList?: string[]
     tagList?: string[]
+  }
+
+  type PictureEditByBatchRequest = {
+    category?: string
+    nameRule?: string
+    pictureIdList?: number[]
+    spaceId?: number
+    tags?: string[]
   }
 
   type PictureUpdateRequest = {
@@ -305,7 +330,9 @@ declare namespace API {
     user?: UserVO
     userId?: number
   }
-
+  type SearchPictureByPictureRequest = {
+    pictureId?: number
+  }
   type Space = {
     createTime?: string
     editTime?: string

@@ -70,7 +70,6 @@ onMounted(() => {
   fetchSpaceLevelList()
 })
 
-// todo 解释router
 const router = useRouter()
 
 /**
@@ -105,10 +104,8 @@ const handleSubmit = async (values: any) => {
   }
   loading.value = false
 }
-// todo 解释route
 const route = useRoute()
 
-// todo 获取老数据
 const getOldSpace = async () => {
   // 获取到 id
   const id = route.query?.id

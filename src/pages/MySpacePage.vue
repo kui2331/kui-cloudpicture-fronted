@@ -32,7 +32,6 @@ const checkUserSpace = async () => {
       const space = res.data.data.records[0]
       router.replace(`/space/${space.id}`)
     } else {
-      // todo replace跳转
       router.replace('/add_space')
       message.warn('请先创建空间')
     }

@@ -36,7 +36,6 @@
       :pagination="pagination"
       @change="doTableChange"
     >
-      <!-- todo 理解#bodyCell -->
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'spaceLevel'">
           <div>{{ SPACE_LEVEL_MAP[record.spaceLevel] }}</div>
@@ -53,7 +52,6 @@
         </template>
         <template v-else-if="column.key === 'action'">
           <a-space wrap>
-            <!-- todo 编辑跳转 --->
             <a-button type="link" :href="`/add_space?id=${record.id}`" target="_blank">
               编辑
             </a-button>
@@ -69,7 +67,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { deleteSpaceUsingPost, listSpaceByPageUsingPost } from '@/api/spaceController.ts'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
-import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '../../constants/space.ts'
+import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '@/constants/space.ts'
 import { formatSize } from '@/utils'
 
 const columns = [
