@@ -129,7 +129,7 @@ const originItems = [
     },
   },
   {
-    key: '/add_picture_batch',
+    key: '/add_picture/batch',
     label: '批量创建图片',
     title: '批量创建图片',
     meta: {

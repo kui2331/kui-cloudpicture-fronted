@@ -7,13 +7,31 @@
     <a-tabs v-model:activeKey="uploadType">
       <a-tab-pane key="file" tab="文件上传">
         <!-- 图片上传组件 -->
-        <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+        <PictureUpload :picture="picture" :spaceId="spaceId" :onSuccess="onSuccess" />
       </a-tab-pane>
       <a-tab-pane key="url" tab="URL 上传" force-render>
         <!-- URL 图片上传组件 -->
-        <UrlPictureUpload :picture="picture" :onSuccess="onSuccess" />
+        <UrlPictureUpload :picture="picture" :spaceId="spaceId" :onSuccess="onSuccess" />
       </a-tab-pane>
     </a-tabs>
+
+    <div v-if="picture" class="edit-bar">
+      <a-button :icon="h(EditOutlined)" @click="doEditPicture">编辑图片</a-button>
+      <ImageCropper
+        ref="imageCropperRef"
+        :imageUrl="picture?.url"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onCropSuccess"
+      />
+      <ImageOutPainting
+        ref="imageOutPaintingRef"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onImageOutPaintingSuccess"
+      />
+    </div>
+
     <!-- 图片信息表单 -->
     <a-form
       v-if="picture"
@@ -28,6 +46,7 @@
       <a-typography-paragraph v-if="spaceId" type="secondary">
         保存至空间：<a :href="`/space/${spaceId}`" target="_blank">{{ spaceId }}</a>
       </a-typography-paragraph>
+
       <a-form-item name="introduction" label="简介">
         <a-textarea
           v-model:value="pictureForm.introduction"
@@ -62,7 +81,7 @@
 
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, h, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import {
   editPictureUsingPost,
@@ -71,6 +90,9 @@ import {
 } from '@/api/pictureController.ts'
 import { useRoute, useRouter } from 'vue-router'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
+import ImageCropper from '@/components/ImageCropper.vue'
+import { EditOutlined } from '@ant-design/icons-vue'
+import ImageOutPainting from '@/components/ImageOutPainting.vue'
 
 const picture = ref<API.PictureVO>()
 const pictureForm = reactive<API.PictureEditRequest>({})
@@ -89,7 +111,34 @@ const onSuccess = (newPicture: API.PictureVO) => {
   pictureForm.name = newPicture.name
 }
 
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
 const router = useRouter()
+
+// 图片编辑弹窗引用
+const imageCropperRef = ref()
+
+// 编辑图片
+const doEditPicture = () => {
+  if (imageCropperRef.value) {
+    imageCropperRef.value.openModal()
+  }
+}
+
+// ----- AI 扩图引用 -----
+const imageOutPaintingRef = ref()
+
+// 打开 AI 扩图弹窗
+const doImagePainting = async () => {
+  imageOutPaintingRef.value?.openModal()
+}
+
+// AI 扩图保存事件
+const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
 
 /**
  * 提交表单
@@ -177,8 +226,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-#addPicturePage {
-  max-width: 720px;
-  margin: 0 auto;
+#addPicturePage .edit-bar {
+  text-align: center;
+  margin: 16px 0;
 }
 </style>

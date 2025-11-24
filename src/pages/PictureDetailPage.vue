@@ -46,15 +46,31 @@
             <a-descriptions-item label="大小">
               {{ formatSize(picture.picSize) }}
             </a-descriptions-item>
+            <a-descriptions-item label="主色调">
+              <a-space>
+                {{ picture.picColor ?? '-' }}
+                <div
+                  v-if="picture.picColor"
+                  :style="{
+                    backgroundColor: toHexColor(picture.picColor),
+                    width: '16px',
+                    height: '16px',
+                  }"
+                />
+              </a-space>
+            </a-descriptions-item>
           </a-descriptions>
           <!-- 图片操作 -->
-          <template #actions v-if="showOp">
+          <template #actions>
             <a-space wrap>
               <a-button type="primary" @click="doDownload">
                 免费下载
                 <template #icon>
                   <DownloadOutlined />
                 </template>
+              </a-button>
+              <a-button :icon="h(ShareAltOutlined)" type="primary" ghost @click="doShare">
+                分享
               </a-button>
               <a-button v-if="canEdit" :icon="h(EditOutlined)" type="default" @click="doEdit">
                 编辑
@@ -67,6 +83,7 @@
         </a-card>
       </a-col>
     </a-row>
+    <ShareModel ref="shareModalRef" :link="shareLink" />
   </div>
 </template>
 
@@ -74,27 +91,37 @@
 import { computed, h, onMounted, ref } from 'vue'
 import { deletePictureUsingPost, getPictureVoByIdUsingGet } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
-import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons-vue'
-import { formatSize } from '@/utils'
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  ShareAltOutlined,
+} from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
-import { downloadImage } from '@/utils'
 import { useLoginUserStore } from '@/stores/userLoginUserStore.ts'
+import { downloadImage, formatSize, toHexColor } from '@/utils'
+import ShareModel from '@/components/ShareModel.vue'
 
 interface Props {
-  dataList?: API.PictureVO[]
-  loading?: boolean
-  showOp?: boolean
-  onReload?: () => void
+  id: string | number
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  dataList: () => [],
-  loading: false,
-  showOp: false,
-})
+const props = defineProps<Props>()
 const picture = ref<API.PictureVO>({})
 
 const loginUserStore = useLoginUserStore()
+
+// ----- 分享操作 ----
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
+// 分享
+const doShare = () => {
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/${picture.value.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
+  }
+}
 
 // 是否具有编辑权限
 const canEdit = computed(() => {
@@ -131,29 +158,27 @@ onMounted(() => {
 const router = useRouter()
 
 // 编辑
-const doEdit = (picture, e) => {
-  e.stopPropagation()
+const doEdit = () => {
+  //e.stopPropagation()
   router.push({
     path: '/add_picture',
     query: {
-      id: picture.id,
-      spaceId: picture.spaceId,
+      id: picture.value.id,
+      spaceId: picture.value.spaceId,
     },
   })
 }
 
 // 删除
-const doDelete = async (picture, e) => {
-  e.stopPropagation()
-  const id = picture.id
+const doDelete = async () => {
+  //e.stopPropagation()
+  const id = picture.value.id
   if (!id) {
     return
   }
   const res = await deletePictureUsingPost({ id })
   if (res.data.code === 0) {
     message.success('删除成功')
-    // 让外层刷新
-    props?.onReload()
   } else {
     message.error('删除失败')
   }

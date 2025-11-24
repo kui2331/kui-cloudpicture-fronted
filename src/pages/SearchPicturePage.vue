@@ -88,7 +88,6 @@ const fetchResultData = async () => {
   loading.value = false
 }
 
-// 页面加载时请求一次
 onMounted(() => {
   fetchResultData()
 })

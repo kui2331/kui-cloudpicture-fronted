@@ -31,23 +31,16 @@
               </template>
             </a-card-meta>
             <template v-if="showOp" #actions>
-              <a-space @click="(e) => doSearch(picture, e)">
-                <search-outlined />
-                搜索
-              </a-space>
-              <a-space @click="(e) => doEdit(picture, e)">
-                <edit-outlined />
-                编辑
-              </a-space>
-              <a-space @click="(e) => doDelete(picture, e)">
-                <delete-outlined />
-                删除
-              </a-space>
+              <search-outlined @click="(e) => doSearch(picture, e)" />
+              <share-alt-outlined @click="(e) => doShare(picture, e)" />
+              <edit-outlined @click="(e) => doEdit(picture, e)" />
+              <delete-outlined @click="(e) => doDelete(picture, e)" />
             </template>
           </a-card>
         </a-list-item>
       </template>
     </a-list>
+    <ShareModel ref="shareModalRef" :link="shareLink" />
   </div>
 </template>
 
@@ -61,6 +54,8 @@ import {
 } from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
+import ShareModel from '@/components/ShareModel.vue'
+import { ref } from 'vue'
 
 interface Props {
   dataList?: API.PictureVO[]
@@ -73,8 +68,22 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   dataList: () => [],
   loading: false,
-  showOp: false,
+  showOp: true,
 })
+
+// ----- 分享操作 ----
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
+// 分享
+const doShare = (picture, e) => {
+  // 阻止冒泡
+  e.stopPropagation()
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/${picture.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
+  }
+}
 // 搜索
 const doSearch = (picture, e) => {
   // 阻止冒泡
@@ -85,7 +94,6 @@ const doSearch = (picture, e) => {
 
 // 编辑
 const doEdit = (picture, e) => {
-  // 阻止冒泡
   e.stopPropagation()
   // 跳转时一定要携带 spaceId
   router.push({
